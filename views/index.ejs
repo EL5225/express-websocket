@@ -1,0 +1,55 @@
+<head>
+  <title>Simple Chat</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <!-- Send message -->
+  <form id="form" action="">
+    <input type="text" id="input" />
+    <button type="submit">Send</button>
+  </form>
+
+  <span
+    id="user"
+    style="
+      font-weight: 500;
+      font-size: 20px;
+      border-radius: 10%;
+      background-color: beige;
+      width: 100%;
+      padding: 5px;
+    "></span>
+
+  <!-- Receive message -->
+  <ul class="messages"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const formEl = document.getElementById("form");
+    const inputEl = document.getElementById("input");
+    const messageEl = document.querySelector(".messages");
+    const userEl = document.getElementById("user");
+
+    const name = prompt("Masukan nama");
+    userEl.textContent = `User: ${name}`;
+
+    formEl.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      if (inputEl.value) {
+        console.log("client", { name, content: inputEl.value });
+        socket.emit("chat message", { name, content: inputEl.value });
+      }
+
+      inputEl.value = "";
+    });
+
+    socket.on("live message", (msg) => {
+      const message = document.createElement("li");
+      message.textContent = `${msg.name}: ${msg.content}`;
+      messageEl.appendChild(message);
+    });
+  </script>
+</body>
